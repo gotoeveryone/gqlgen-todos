@@ -66,3 +66,11 @@ mutation updateTodo {
   }
 }
 ```
+
+### Delete todo
+
+```graphql
+mutation deleteTodo {
+  deleteTodo(input: { id: "af1310c4-0a86-47e6-8429-31bfeb7bda86" })
+}
+```

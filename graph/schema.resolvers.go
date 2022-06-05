@@ -34,6 +34,23 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 	return nil, errors.New("no todo found")
 }
 
+func (r *mutationResolver) DeleteTodo(ctx context.Context, input model.DeleteTodo) (*string, error) {
+	newTodos := []*model.Todo{}
+	success := false
+	for _, t := range r.todos {
+		if t.ID != input.ID {
+			newTodos = append(newTodos, t)
+		} else {
+			success = true
+		}
+	}
+	if success {
+		r.todos = newTodos
+		return &input.ID, nil
+	}
+	return nil, errors.New("no todo found")
+}
+
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	return r.todos, nil
 }
