@@ -5,9 +5,9 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
+	"errors"
 
+	"github.com/google/uuid"
 	"github.com/gotoeveryone/gqlgen-todos/graph/generated"
 	"github.com/gotoeveryone/gqlgen-todos/graph/model"
 )
@@ -15,11 +15,23 @@ import (
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 	todo := &model.Todo{
 		Text: input.Text,
-		ID:   fmt.Sprintf("T%d", rand.Int()),
+		ID:   uuid.NewString(),
 		User: &model.User{ID: input.UserID, Name: "user " + input.UserID},
 	}
 	r.todos = append(r.todos, todo)
 	return todo, nil
+}
+
+func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.Todo, error) {
+	for idx, t := range r.todos {
+		if t.ID == input.ID {
+			r.todos[idx].Text = input.Text
+			r.todos[idx].Done = input.Done
+			r.todos[idx].UserID = input.UserID
+			return r.todos[idx], nil
+		}
+	}
+	return nil, errors.New("no todo found")
 }
 
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
